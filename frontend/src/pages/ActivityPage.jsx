@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faArrowLeft, faComment, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faArrowLeft, faComment, faMagnifyingGlass, faPlus, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { getClubs } from '../services/clubsService';
 import { createClubFeedConnection } from '../services/clubFeedSignalR';
 import { getClubPosts, createPost, uploadPostAttachment } from '../services/postsService';
