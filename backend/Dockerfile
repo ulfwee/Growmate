@@ -1,23 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 
-FROM mcr.microsoft.comdotnetsdk9.0 AS build
+WORKDIR /src
 
-WORKDIR src
-
-COPY backend.csproj .
+COPY backend.csproj ./
 RUN dotnet restore backend.csproj
 
-COPY . .
-RUN dotnet publish backend.csproj -c Release -o apppublish --no-restore
+COPY . ./
+RUN dotnet publish backend.csproj -c Release -o /app/publish --no-restore
 
-FROM mcr.microsoft.comdotnetaspnet9.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 
-WORKDIR app
+WORKDIR /app
 
-COPY --from=build apppublish .
+COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS=http0.0.0.010000
+ENV ASPNETCORE_URLS=http://0.0.0.0:10000
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 EXPOSE 10000
 
-ENTRYPOINT [dotnet, backend.dll]
+ENTRYPOINT ["dotnet", "backend.dll"]
