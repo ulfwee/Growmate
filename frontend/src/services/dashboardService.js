@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5200/api';
+const API_URL = import.meta.env.API_URL;
 
 const getHeaders = () => {
   const token = localStorage.getItem('token');

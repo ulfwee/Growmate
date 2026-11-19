@@ -109,6 +109,19 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+var frontendUrl = builder.Configuration["FrontendUrl"];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy
+            .WithOrigins(frontendUrl!)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddSignalR();
 
 var app = builder.Build();
@@ -134,6 +147,8 @@ app.UseRouting();
 app.UseCors("AllowReactApp");
 
 app.UseStaticFiles();
+
+app.UseCors("FrontendPolicy");
 
 app.UseAuthentication();
 
