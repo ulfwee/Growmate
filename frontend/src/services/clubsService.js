@@ -1,4 +1,4 @@
-export const API_ORIGIN = import.meta.env.API_URL;
+export const API_ORIGIN = import.meta.env.VITE_API_URL;
 const API = `${API_ORIGIN}/api`;
 
 async function request(path, options = {}) {

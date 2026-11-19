@@ -1,6 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 
-const API = import.meta.env.API_URL;
+const API = import.meta.env.VITE_API_URL;
 
 export function createClubFeedConnection() {
   return new signalR.HubConnectionBuilder()
