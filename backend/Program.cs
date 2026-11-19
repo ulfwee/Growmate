@@ -10,17 +10,6 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowReactApp", policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});
 
 builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -109,16 +98,28 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+
 var frontendUrl = builder.Configuration["FrontendUrl"];
+
+var allowedOrigins = new List<string>
+{
+    "http://localhost:5173"
+};
+
+if (!string.IsNullOrWhiteSpace(frontendUrl))
+{
+    allowedOrigins.Add(frontendUrl.TrimEnd('/'));
+}
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("FrontendPolicy", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .WithOrigins(frontendUrl!)
+            .WithOrigins(allowedOrigins.ToArray())
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -144,11 +145,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseRouting();
 
-app.UseCors("AllowReactApp");
+app.UseCors("AllowFrontend");
 
 app.UseStaticFiles();
-
-app.UseCors("FrontendPolicy");
 
 app.UseAuthentication();
 

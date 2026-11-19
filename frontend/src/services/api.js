@@ -1,6 +1,7 @@
-const API_URL = '/api';
+const API_URL = `${
+  import.meta.env.VITE_API_URL || 'http://localhost:5200'
+}/api`;
 
-console.log('VITE_API_URL:', import.meta.env.API_URL);
 export const apiCall = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
 
