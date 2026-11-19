@@ -10,7 +10,7 @@ import PostComposer from '../components/activity/PostComposer';
 import PostFilters from '../components/activity/PostFilters';
 import PostCard from '../components/activity/PostCard';
 import MembersPanel from '../components/activity/MembersPanel';
-import { API_ORIGIN } from '../components/activity/activityUtils';
+import { API_ORIGIN, attachmentUrl } from '../components/activity/activityUtils';
 import '../css/ActivityPage.css';
 
 export default function ActivityPage({ user, onUserStatsChanged }) {

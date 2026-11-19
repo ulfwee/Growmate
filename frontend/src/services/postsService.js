@@ -1,9 +1,10 @@
-const API = import.meta.env.VITE_API_URL;
+import { API_ORIGIN } from '../components/activity/activityUtils';
+
+const API = `${API_ORIGIN}/api`;
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('token');
-
-  const response = await fetch(`${API}/api${path}`, {
+const response = await fetch(`${API}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -100,7 +101,7 @@ export async function uploadPostAttachment(clubId, file) {
   form.append('clubId', String(clubId));
   form.append('file', file);
   const token = localStorage.getItem('token');
-  const response = await fetch(`${API}/api/posts/upload`, {
+  const response = await fetch(`${API}/posts/upload`, {
     method: 'POST',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: form,

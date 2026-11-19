@@ -1,4 +1,9 @@
-export const API_ORIGIN = import.meta.env.VITE_API_URL;
+export const API_ORIGIN = (
+  import.meta.env.VITE_API_URL || 'http://localhost:5200'
+)
+  .replace(/\/$/, '')
+  .replace(/\/api$/, '');
+
 const API = `${API_ORIGIN}/api`;
 
 async function request(path, options = {}) {

@@ -1,14 +1,17 @@
 import * as signalR from '@microsoft/signalr';
-
-const API = import.meta.env.VITE_API_URL;
+import { API_ORIGIN } from '../components/activity/activityUtils';
 
 export function createClubFeedConnection() {
-  return new signalR.HubConnectionBuilder()
-    .withUrl(`${API}/hubs/club-feed`, {
-      accessTokenFactory: () =>
-        localStorage.getItem('token') || '',
-    })
-    .withAutomaticReconnect()
-    .configureLogging(signalR.LogLevel.Warning)
-    .build();
+    const hubUrl = `${API_ORIGIN}/hubs/club-feed`;
+
+    console.log('ClubFeed SignalR URL:', hubUrl);
+
+    return new signalR.HubConnectionBuilder()
+        .withUrl(hubUrl, {
+            accessTokenFactory: () =>
+                localStorage.getItem('token') || '',
+        })
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Warning)
+        .build();
 }

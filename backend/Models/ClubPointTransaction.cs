@@ -21,8 +21,7 @@ public class ClubPointTransaction
 
     public int Points { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-        = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [ForeignKey(nameof(ClubId))]
     public Club Club { get; set; } = null!;
