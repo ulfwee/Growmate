@@ -1,0 +1,475 @@
+.ce-section {
+    width: 100%;
+    min-width: 0;
+    color: #30283b;
+}
+
+.ce-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.ce-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: #8667a0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ce-section-header h2 {
+    margin: 0 0 8px;
+    font-size: 27px;
+    font-weight: 750;
+}
+
+.ce-section-header p,
+.ce-modal-heading p {
+    margin: 0;
+    color: #817989;
+    line-height: 1.6;
+}
+
+.ce-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.ce-btn-primary {
+    color: #fff;
+    background: #694782;
+}
+
+.ce-btn-primary:hover:not(:disabled) {
+    background: #533669;
+    color: #fff;
+}
+
+.ce-btn-light {
+    background: #f3eef7;
+    color: #694782;
+    border-color: #e9dfef;
+}
+
+.ce-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.ce-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.ce-filters,
+.ce-type-switch {
+    display: inline-flex;
+    gap: 5px;
+    padding: 5px;
+    background: #f4f0f6;
+    border-radius: 11px;
+}
+
+.ce-filters button,
+.ce-type-switch button {
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    padding: 9px 17px;
+    color: #756a80;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ce-filters button.active,
+.ce-type-switch button.selected {
+    background: #fff;
+    color: #65417f;
+    box-shadow: 0 2px 8px #2e17420d;
+}
+
+.ce-count {
+    font-size: 13px;
+    color: #8b8292;
+}
+
+.ce-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.ce-card {
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #eae4ee;
+    border-radius: 14px;
+    box-shadow: 0 4px 22px #3c254708;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ce-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px #3c254713;
+}
+
+.ce-card-cover {
+    position: relative;
+    height: 190px;
+    background: #e6dced;
+}
+
+.ce-card-cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ce-cover-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #d9c8e7, #8d70a8);
+}
+
+.ce-cover-fallback span {
+    font-size: 28px;
+    font-weight: 750;
+    color: #fff;
+}
+
+.ce-format {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 7px 12px;
+    border-radius: 7px;
+    color: #65417f;
+    background: #ffffffed;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ce-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 21px;
+}
+
+.ce-card-date {
+    color: #805a9b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ce-card-body h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.ce-card-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 62px;
+    margin: 0;
+    color: #827b88;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.ce-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding-top: 12px;
+    border-top: 1px solid #f0ecf2;
+    color: #71677a;
+    font-size: 12px;
+}
+
+.ce-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.ce-manage-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.ce-manage-actions button {
+    border: none;
+    background: transparent;
+    color: #74578b;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.ce-manage-actions button.danger {
+    color: #bb5c69;
+}
+
+.ce-meeting-link {
+    color: #694782;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ce-empty,
+.ce-error {
+    padding: 65px 25px;
+    text-align: center;
+    background: #faf8fb;
+    border: 1px dashed #dfd3e8;
+    border-radius: 14px;
+}
+
+.ce-empty-icon {
+    margin-bottom: 12px;
+    color: #9474ac;
+    font-size: 38px;
+}
+
+.ce-empty h3 {
+    margin: 0 0 8px;
+}
+
+.ce-empty p {
+    margin: 0;
+    color: #8c8392;
+}
+
+.ce-error {
+    margin-bottom: 20px;
+    color: #a83e53;
+}
+
+.ce-error button {
+    margin-left: 12px;
+    cursor: pointer;
+}
+
+.ce-modal-backdrop {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #20152b99;
+}
+
+.ce-modal {
+    width: min(100%, 650px);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 25px 80px #160c2240;
+}
+
+.ce-modal-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.ce-modal-heading h2 {
+    margin: 0 0 8px;
+    font-size: 24px;
+}
+
+.ce-close {
+    align-self: flex-start;
+    border: none;
+    background: #f4f0f6;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    font-size: 24px;
+    color: #665371;
+    cursor: pointer;
+}
+
+.ce-form,
+.ce-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.ce-form {
+    gap: 19px;
+}
+
+.ce-field>span {
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.ce-field input,
+.ce-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #e4dce9;
+    border-radius: 9px;
+    outline: none;
+    background: #fff;
+    color: #30283b;
+    font: inherit;
+    font-size: 14px;
+}
+
+.ce-field input:focus,
+.ce-field textarea:focus {
+    border-color: #9b7bb2;
+    box-shadow: 0 0 0 3px #9b7bb21a;
+}
+
+.ce-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.ce-image-preview {
+    height: 150px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.ce-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ce-checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+    background: #f7f3f9;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.ce-checkbox-row input {
+    margin-top: 4px;
+    accent-color: #694782;
+}
+
+.ce-checkbox-row span {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ce-checkbox-row small {
+    color: #81758a;
+}
+
+.ce-form-error {
+    padding: 12px;
+    background: #fff1f2;
+    border-radius: 8px;
+    color: #b33e55;
+    font-size: 13px;
+}
+
+.ce-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 10px;
+}
+
+@media (max-width: 1100px) {
+    .ce-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+
+    .ce-grid,
+    .ce-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ce-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ce-modal {
+        padding: 20px;
+    }
+}
+
+.ce-checkbox-row {
+    padding: 11px 12px;
+    gap: 10px;
+    border: 1px solid #e8e1ed;
+    background: #fcfafd;
+    border-radius: 6px;
+    align-items: center;
+}
+
+.ce-checkbox-row input {
+    margin: 0;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+}
+
+.ce-checkbox-row span {
+    gap: 2px;
+}
+
+.ce-checkbox-row strong {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ce-checkbox-row small {
+    font-size: 11px;
+    line-height: 1.4;
+}

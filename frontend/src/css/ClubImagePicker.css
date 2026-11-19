@@ -1,0 +1,76 @@
+.gm-image-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 12px 0 18px;
+}
+
+.gm-image-picker-label {
+    color: #382744;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gm-image-picker-preview {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    border: 1px solid #e8e2ef;
+    border-radius: 5px;
+}
+
+.gm-image-picker-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.gm-image-picker-upload {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 14px;
+    background: #f3edf7;
+    color: #5b3d73;
+    border: 1px solid #e4d8ed;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gm-image-picker-upload:hover {
+    background: #eae0f1;
+}
+
+.gm-image-picker-upload:has(input:disabled) {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.gm-image-picker-upload input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.gm-image-picker-actions button {
+    border: 0;
+    background: transparent;
+    color: #a34754;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.gm-image-picker small {
+    color: #8b7b94;
+    font-size: 12px;
+}
+
+.gm-image-picker-error {
+    margin: 0;
+    color: #a83a48;
+    font-size: 12px;
+}

@@ -1,0 +1,56 @@
+:root {
+  --app-bg: #f8f7fa;
+  --app-purple: #503564;
+  --app-purple-light: #79549a;
+  --app-text: #30273a;
+  --app-muted: #82798a;
+  --app-border: #e8e3ed;
+
+  --app-max-width: 1520px;
+  --app-side-padding: 32px;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--app-bg);
+}
+
+.app-loading {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--app-purple);
+  font-size: 16px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.tasks-page,
+.dashboard-main,
+.goals-page {
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.dashboard-header .header-inner {
+  width: 100%;
+  max-width: var(--app-max-width);
+  box-sizing: border-box;
+  padding-left: var(--app-side-padding);
+  padding-right: var(--app-side-padding);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --app-side-padding: 18px;
+  }
+}

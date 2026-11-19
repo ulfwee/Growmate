@@ -1,0 +1,70 @@
+.level-progress__top,
+.level-progress__identity,
+.level-progress__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.level-progress__icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #69458a;
+  font-size: 25px;
+}
+
+.level-progress h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  color: #30263a;
+}
+
+.level-progress__total {
+  font-weight: 700;
+  color: #69458a;
+  white-space: nowrap;
+}
+
+.level-progress__track {
+  height: 9px;
+  overflow: hidden;
+  background: #eee9f2;
+  border-radius: 20px;
+}
+
+.level-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9b77bd, #654080);
+  border-radius: inherit;
+  transition: width 350ms ease;
+}
+
+.level-progress__bottom {
+  margin-top: 11px;
+  color: #81788a;
+  font-size: 12px;
+}
+
+.level-progress--compact {
+  padding: 12px 15px;
+}
+
+.level-progress--compact .level-progress__icon {
+  width: 34px;
+  height: 34px;
+  font-size: 18px;
+}
+
+.level-progress--compact h3 {
+  font-size: 15px;
+}
+
+.level-progress--compact .level-progress__track {
+  margin-top: 11px;
+  height: 6px;
+}

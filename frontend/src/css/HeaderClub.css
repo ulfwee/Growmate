@@ -1,0 +1,65 @@
+.header-clubs-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 66px
+}
+
+.header-clubs-trigger {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: 0;
+    background: transparent;
+    color: #e5dbea;
+    font: 500 14px 'DM Sans', sans-serif;
+    cursor: pointer;
+    padding: 8px 0;
+    white-space: nowrap
+}
+
+.header-clubs-trigger:hover,
+.header-clubs-trigger.active {
+    color: white
+}
+
+.header-clubs-trigger svg {
+    font-size: 10px;
+    transition: transform .2s
+}
+
+.header-clubs-trigger[aria-expanded="true"] svg {
+    transform: rotate(180deg)
+}
+
+.header-clubs-dropdown {
+    position: absolute;
+    top: calc(100% - 5px);
+    left: -15px;
+    min-width: 195px;
+    padding: 7px;
+    background: white;
+    border: 1px solid #ebe5ee;
+    border-radius: 5px;
+    box-shadow: 0 12px 30px #28172d25;
+    z-index: 1100
+}
+
+.header-nav .header-clubs-dropdown a {
+    display: block;
+    padding: 12px 13px;
+    color: #4b3d56;
+    font-size: 13px;
+    border-radius: 4px;
+    text-decoration: none
+}
+
+.header-nav .header-clubs-dropdown a:hover,
+.header-nav .header-clubs-dropdown a.active {
+    background: #f4eff8;
+    color: #62417f
+}
+
+.header-nav .header-clubs-dropdown a.active::after {
+    display: none
+}

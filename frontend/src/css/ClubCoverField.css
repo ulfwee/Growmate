@@ -1,0 +1,86 @@
+.gm-cover-field {
+    display: grid;
+    gap: 12px;
+    margin: 10px 0 22px
+}
+
+.gm-cover-field .gm-field-label {
+    font-weight: 600;
+    color: #44364d
+}
+
+.gm-cover-field small {
+    font-weight: 400;
+    color: #8b8192
+}
+
+.gm-cover-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    background: #f4eff7;
+    border-radius: 10px
+}
+
+.gm-cover-tabs button {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #6c6074;
+    cursor: pointer
+}
+
+.gm-cover-tabs button.active {
+    background: white;
+    color: #674584;
+    box-shadow: 0 1px 5px #38234419;
+    font-weight: 600
+}
+
+.gm-cover-drop {
+    border: 1px dashed #bca9ca;
+    background: #faf7fc;
+    border-radius: 10px;
+    padding: 18px;
+    display: grid;
+    gap: 8px;
+    text-align: center;
+    color: #746781
+}
+
+.gm-cover-drop input {
+    max-width: 100%;
+    margin: auto
+}
+
+.gm-cover-url {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #dcd3e4;
+    border-radius: 9px
+}
+
+.gm-cover-preview {
+    display: grid;
+    gap: 8px
+}
+
+.gm-cover-preview img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #eee
+}
+
+.gm-cover-preview button {
+    justify-self: start;
+    background: none;
+    border: 0;
+    color: #785294;
+    cursor: pointer;
+    padding: 5px 0
+}
