@@ -41,6 +41,8 @@ public class AppDBContext : DbContext
     public DbSet<ClubEventParticipant> ClubEventParticipants => Set<ClubEventParticipant>();
     public DbSet<ClubPointTransaction> ClubPointTransactions => Set<ClubPointTransaction>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<GroupGoalTaskSubmission> GroupGoalTaskSubmissions => Set<GroupGoalTaskSubmission>();
+    public DbSet<TaskSubmissionAttachment> TaskSubmissionAttachments => Set<TaskSubmissionAttachment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -425,6 +427,8 @@ public class AppDBContext : DbContext
             entity.Property(x => x.SortOrder).HasColumnName("sort_order");
             entity.Property(x => x.CreatedAt).HasColumnName("created_at");
             entity.Property(x => x.DueDate).HasColumnName("due_date");
+            entity.Property(e => e.ReviewCriteria).HasColumnName("review_criteria");
+            entity.Property(e => e.RequiresAttachment).HasColumnName("requires_attachment").HasDefaultValue(false);
 
             entity.HasIndex(x => new { x.GroupGoalId, x.SortOrder });
         });
@@ -570,7 +574,53 @@ public class AppDBContext : DbContext
 
             entity.HasIndex(n => new { n.UserId, n.CreatedAt });
             entity.HasIndex(n => n.UserId).HasFilter("is_read = false");
-    });
+        });
+        modelBuilder.Entity<GroupGoalTaskSubmission>(entity =>
+        {
+            entity.HasKey(e => e.Id);
 
+            entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("pending");
+            entity.Property(e => e.SubmittedAt).HasDefaultValueSql("NOW()");
+            
+            entity.HasOne(e => e.GroupGoalTask).WithMany(t => t.Submissions).HasForeignKey(e => e.GroupGoalTaskId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Reviewer).WithMany().HasForeignKey(e => e.ReviewedBy).OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => new
+            {
+                e.GroupGoalTaskId,
+                e.UserId
+            })
+            .IsUnique()
+            .HasFilter("status IN ('pending', 'approved')")
+            .HasDatabaseName("ux_task_submission_active");
+
+            entity.HasIndex(e => new
+            {
+                e.GroupGoalTaskId,
+                e.Status
+            })
+            .HasDatabaseName("ix_task_submissions_task_status");
+
+            entity.HasIndex(e => new
+            {
+                e.UserId,
+                e.SubmittedAt
+            })
+            .IsDescending(false, true)
+            .HasDatabaseName("ix_task_submissions_user");
+        });
+        modelBuilder.Entity<TaskSubmissionAttachment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.FileName).HasMaxLength(255);
+            entity.Property(e => e.ContentType).HasMaxLength(150);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+
+            entity.HasOne(e => e.Submission).WithMany(s => s.Attachments).HasForeignKey(e => e.SubmissionId).OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.SubmissionId).HasDatabaseName("ix_submission_attachments_submission");
+        });
     }
 }

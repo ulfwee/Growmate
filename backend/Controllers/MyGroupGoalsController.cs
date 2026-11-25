@@ -54,6 +54,13 @@ public class MyGroupGoalsController : ControllerBase
                 select t.Id
             ).CountAsync();
 
+            var pending = await _db.GroupGoalTaskSubmissions.CountAsync(s =>
+                s.GroupGoalTask.GroupGoalId == goal.Id && s.UserId == userId && s.Status == "pending");
+            var rejected = await _db.GroupGoalTasks.CountAsync(t => t.GroupGoalId == goal.Id &&
+                t.Submissions.Where(s => s.UserId == userId)
+                    .OrderByDescending(s => s.SubmittedAt).ThenByDescending(s => s.Id)
+                    .Select(s => s.Status).FirstOrDefault() == "rejected");
+
             var progress = total == 0 ? 0 : Math.Round(100.0 * completed / total, 2);
             result.Add(new
             {
@@ -66,6 +73,8 @@ public class MyGroupGoalsController : ControllerBase
                 goal.Status,
                 TasksCount = total,
                 CompletedTasks = completed,
+                PendingTasks = pending,
+                RejectedTasks = rejected,
                 MyProgress = progress,
                 IsPersonallyCompleted = total > 0 && completed == total
             });
@@ -99,10 +108,35 @@ public class MyGroupGoalsController : ControllerBase
                 GroupGoalTitle = g.Title,
                 GroupGoalStatus = g.Status,
                 ClubName = club.Name,
-                IsCompleted = _db.GroupGoalTaskCompletions.Any(c => c.GroupGoalTaskId == t.Id && c.UserId == userId)
+                t.ReviewCriteria,
+                t.RequiresAttachment,
+                IsCompleted = _db.GroupGoalTaskCompletions.Any(c => c.GroupGoalTaskId == t.Id && c.UserId == userId),
+                MySubmission = t.Submissions.Where(s => s.UserId == userId)
+                    .OrderByDescending(s => s.SubmittedAt).ThenByDescending(s => s.Id)
+                    .Select(s => new
+                    {
+                        s.Id,
+                        s.ReportText,
+                        s.EvidenceUrl,
+                        s.Status,
+                        s.Rating,
+                        s.ReviewComment,
+                        s.SubmittedAt,
+                        s.ReviewedAt,
+                        s.ReviewedBy,
+                        ReviewerUsername = s.Reviewer == null ? null : s.Reviewer.Username,
+                        Attachments = s.Attachments.Select(a => new
+                        {
+                            a.Id,
+                            a.FileUrl,
+                            a.FileName,
+                            a.ContentType,
+                            a.FileSize
+                        }).ToList()
+                    }).FirstOrDefault()
             }
-        ).Distinct().ToListAsync();
+        ).ToListAsync();
 
-        return Ok(tasks);
+        return Ok(tasks.DistinctBy(t => t.Id));
     }
 }

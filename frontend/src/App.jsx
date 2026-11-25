@@ -110,7 +110,7 @@ function AppRoutes({
         />
 
         <Route path="/clubs/:clubId/group-goals/:goalId" element={protectedPage(
-            <GroupGoalDetailsPage onUserStatsChanged={handleStatsChanged} />
+            <GroupGoalDetailsPage user={currentUser} onUserStatsChanged={handleStatsChanged} />
           )}
         />
 

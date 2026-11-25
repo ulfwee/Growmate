@@ -14,4 +14,9 @@ public class GroupGoalTaskInputDto
 
     [Required(ErrorMessage = "Вкажіть дату виконання завдання.")]
     public DateOnly? DueDate { get; set; }
+
+    [MaxLength(3000)]
+    public string? ReviewCriteria { get; set; }
+
+    public bool RequiresAttachment { get; set; } = false;
 }

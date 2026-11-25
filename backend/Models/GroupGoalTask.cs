@@ -19,4 +19,12 @@ public class GroupGoalTask
     [Required]
     [Column("due_date")]
     public DateOnly DueDate { get; set; }
+
+    [Column("review_criteria")]
+    public string? ReviewCriteria { get; set; }
+
+    [Column("requires_attachment")]
+    public bool RequiresAttachment { get; set; } = false;
+
+    public ICollection<GroupGoalTaskSubmission> Submissions { get; set; } = new List<GroupGoalTaskSubmission>();
 }

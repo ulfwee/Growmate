@@ -8,6 +8,7 @@ import {
   joinClubEvent,
   leaveClubEvent,
 } from '../../services/clubEventsService';
+import { getImageUrl } from '../../utils/imageUrl';
 import { useToast } from '../ToastProvider';
 import ClubEventModal from './ClubEventModal';
 import ConfirmDialog from '../ConfirmDialog';
@@ -221,7 +222,10 @@ export default function ClubEvents({
               <article className="ce-card" key={event.id}>
                 <div className="ce-card-cover">
                   {event.coverUrl ? (
-                    <img src={event.coverUrl} alt={event.title} />
+                    <img
+                      src={getImageUrl(event.coverUrl)}
+                      alt={event.title}
+                    />
                   ) : (
                     <div className="ce-cover-fallback" />
                   )}
@@ -267,8 +271,8 @@ export default function ClubEvents({
                       ) : (
                         <button
                           className={`ce-btn ${event.isParticipant
-                              ? 'ce-btn-light'
-                              : 'ce-btn-primary'
+                            ? 'ce-btn-light'
+                            : 'ce-btn-primary'
                             }`}
                           disabled={
                             eventBusy ||
@@ -341,6 +345,7 @@ export default function ClubEvents({
 
       {modalOpen && (
         <ClubEventModal
+          clubId={clubId}
           event={editingEvent}
           saving={saving}
           onSave={handleSave}

@@ -1,6 +1,6 @@
-const API_URL = `${
-  import.meta.env.VITE_API_URL || 'http://localhost:5200'
-}/api`;
+const API_URL = `${(import.meta.env.VITE_API_URL || 'http://localhost:5200')
+  .replace(/\/+$/, '')
+  .replace(/\/api$/, '')}/api`;
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('token');
@@ -77,7 +77,6 @@ export const leaveGroupGoal = (clubId, goalId) =>
     method: 'DELETE',
   });
 
-
 const taskPath = (clubId, goalId) =>
   `${goalPath(clubId)}/${goalId}/tasks`;
 
@@ -91,7 +90,10 @@ export const createGroupGoalTask = (clubId, goalId, data) =>
   });
 
 export const updateGroupGoalTask = (
-  clubId, goalId, taskId, data
+  clubId,
+  goalId,
+  taskId,
+  data
 ) =>
   request(`${taskPath(clubId, goalId)}/${taskId}`, {
     method: 'PUT',
@@ -99,22 +101,13 @@ export const updateGroupGoalTask = (
   });
 
 export const deleteGroupGoalTask = (
-  clubId, goalId, taskId
+  clubId,
+  goalId,
+  taskId
 ) =>
   request(`${taskPath(clubId, goalId)}/${taskId}`, {
     method: 'DELETE',
   });
-
-export const setGroupGoalTaskCompletion = (
-  clubId, goalId, taskId, isCompleted
-) =>
-  request(
-    `${taskPath(clubId, goalId)}/${taskId}/completion`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify({ isCompleted }),
-    }
-  );
 
 export const getMyGroupGoals = () =>
   request('/my/group-goals');

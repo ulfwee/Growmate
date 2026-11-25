@@ -5,6 +5,8 @@ export default function GroupGoalTaskModal({ task, goal, saving, onSave, onClose
     const [title, setTitle] = useState(task?.title ?? '');
     const [description, setDescription] = useState(task?.description ?? '');
     const [dueDate, setDueDate] = useState(task?.dueDate?.slice(0, 10) ?? '');
+    const [reviewCriteria, setReviewCriteria] = useState(task?.reviewCriteria ?? '');
+    const [requiresAttachment, setRequiresAttachment] = useState(Boolean(task?.requiresAttachment));
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -37,6 +39,7 @@ export default function GroupGoalTaskModal({ task, goal, saving, onSave, onClose
             await onSave({
                 title: title.trim(), description: description.trim() || null,
                 dueDate, sortOrder: task?.sortOrder ?? 0,
+                reviewCriteria: reviewCriteria.trim() || null, requiresAttachment,
             });
         } catch (err) {
             setError(err.message || 'Не вдалося зберегти завдання.');
@@ -72,6 +75,19 @@ export default function GroupGoalTaskModal({ task, goal, saving, onSave, onClose
                         <input type="date" value={dueDate} min={goal?.startDate?.slice(0, 10)} max={goal?.endDate?.slice(0, 10)} onChange={event => setDueDate(event.target.value)} required />
                     </label>
 
+                    <label className="ggtm-field">
+                        <span className="ggtm-field-label">Критерії оцінювання</span>
+                        <textarea value={reviewCriteria} onChange={event => setReviewCriteria(event.target.value)} maxLength={3000} rows={3} placeholder="За якими критеріями перевіряти роботу?" />
+                    </label>
+                    <label className="ggtm-checkbox">
+                        <input
+                            type="checkbox"
+                            checked={requiresAttachment}
+                            onChange={event => setRequiresAttachment(event.target.checked)}
+                        />
+
+                        <span>Обов'язково прикріпити доказ виконання</span>
+                    </label>
                     {error && <p className="ggtm-error" role="alert">{error}</p>}
                     <div className="ggtm-actions">
                         <button type="button" className="ggtm-cancel" onClick={onClose} disabled={saving}>Скасувати</button>

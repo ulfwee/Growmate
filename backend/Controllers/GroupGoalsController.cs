@@ -355,6 +355,9 @@ public class GroupGoalsController : ControllerBase
             return NotFound(new { message = "Ви не берете участі в цій цілі." });
         var taskIds = await _db.GroupGoalTasks.Where(t => t.GroupGoalId == id).Select(t => t.Id).ToListAsync();
 
+        if (await _db.GroupGoalTaskSubmissions.AnyAsync(s => s.UserId == userId && taskIds.Contains(s.GroupGoalTaskId)))
+            return Conflict(new { message = "Неможливо залишити ціль, для якої вже надіслано звіти." });
+
         var completions = await _db.GroupGoalTaskCompletions.Where(c => c.UserId == userId && taskIds.Contains(c.GroupGoalTaskId)).ToListAsync();
 
         _db.GroupGoalTaskCompletions.RemoveRange(completions);

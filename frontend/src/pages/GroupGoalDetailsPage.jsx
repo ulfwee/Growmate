@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useState, } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getClub } from '../services/clubsService';
-import { getGroupGoal, getGroupGoalTasks, createGroupGoalTask, updateGroupGoalTask, deleteGroupGoalTask, setGroupGoalTaskCompletion, joinGroupGoal, leaveGroupGoal, } from '../services/groupGoalsService';
+import { getGroupGoal, getGroupGoalTasks, createGroupGoalTask, updateGroupGoalTask, deleteGroupGoalTask, joinGroupGoal, leaveGroupGoal, } from '../services/groupGoalsService';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import GroupGoalTaskModal from '../components/groupGoals/GroupGoalTaskModal';
+import TaskSubmissionModal from '../components/groupGoalsTasks/TaskSubmissionModal';
+import TaskSubmissionStatus from '../components/groupGoalsTasks/TaskSubmissionStatus';
+import TaskSubmissionsPanel from '../components/groupGoalsTasks/TaskSubmissionsPanel';
 import '../css/GroupGoalDetails.css';
 const STATUS_LABELS = {
     planned: 'Запланована',
@@ -30,7 +33,7 @@ function ProgressBar({ label, value }) {
         </div>
     </div>);
 }
-export default function GroupGoalDetailsPage({ onUserStatsChanged, }) {
+export default function GroupGoalDetailsPage({ user, onUserStatsChanged, }) {
     const { clubId, goalId } = useParams();
     const [club, setClub] = useState(null);
     const [goal, setGoal] = useState(null);
@@ -38,6 +41,8 @@ export default function GroupGoalDetailsPage({ onUserStatsChanged, }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { showToast } = useToast();
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [reviewVersion, setReviewVersion] = useState(0);
     const [editorTask, setEditorTask] = useState(undefined);
     const [saving, setSaving] = useState(false);
     const [busyTaskId, setBusyTaskId] = useState(null);
@@ -116,25 +121,10 @@ export default function GroupGoalDetailsPage({ onUserStatsChanged, }) {
             setSaving(false);
         }
     };
-    const toggleTask = async (task) => {
-        if (!isParticipant ||
-            isClosed ||
-            busyTaskId !== null) {
-            return;
-        }
-        setBusyTaskId(task.id);
-        setError('');
-        try {
-            await setGroupGoalTaskCompletion(clubId, goalId, task.id, !task.isCompleted);
-            await loadData();
-            await refreshStats();
-        }
-        catch (err) {
-            setError(err.message || 'Не вдалося оновити виконання завдання.');
-        }
-        finally {
-            setBusyTaskId(null);
-        }
+    const refreshAfterSubmission = async () => {
+        setReviewVersion(v => v + 1);
+        try { await loadData(); await refreshStats(); }
+        catch (err) { setError(err.message); }
     };
     const removeTask = async () => {
         if (!taskToDelete ||
@@ -284,7 +274,7 @@ export default function GroupGoalDetailsPage({ onUserStatsChanged, }) {
                             <p>
                                 {isParticipant
                                     ? `Виконано ${completedCount} із ${tasks.length}`
-                                    : 'Долучіться до цілі, щоб відмічати виконання.'}
+                                    : 'Долучіться до цілі, щоб надсилати звіти.'}
                             </p>
                         </div>
 
@@ -303,11 +293,6 @@ export default function GroupGoalDetailsPage({ onUserStatsChanged, }) {
                         </p>
                     </div>) : (<div className="ggd-task-list">
                         {tasks.map((task, index) => (<article key={task.id} className={`ggd-task ${task.isCompleted ? 'is-done' : ''}`}>
-                            <div className="ggd-task-check">
-                                <input type="checkbox" checked={Boolean(task.isCompleted)} disabled={!isParticipant ||
-                                    isClosed ||
-                                    busyTaskId !== null} onChange={() => toggleTask(task)} aria-label={`Виконано: ${task.title}`} />
-                            </div>
 
                             <div className="ggd-task-body">
                                 <div className="ggd-task-title">
@@ -319,6 +304,9 @@ export default function GroupGoalDetailsPage({ onUserStatsChanged, }) {
                                 </div>
 
                                 {task.description && (<p>{task.description}</p>)}
+                                {task.reviewCriteria && <p><strong>Критерії:</strong> {task.reviewCriteria}</p>}
+                                {task.requiresAttachment && <p>Необхідно прикріпити файл.</p>}
+                                <TaskSubmissionStatus task={task} canSubmit={isParticipant && !isClosed} onSubmit={setSelectedTask} />
 
                                 {task.dueDate && (<p className="ggd-task-date">
                                     {task.isCompleted
@@ -349,6 +337,7 @@ export default function GroupGoalDetailsPage({ onUserStatsChanged, }) {
 
 
             <aside className="ggd-sidebar">
+                {canManage && <TaskSubmissionsPanel clubId={clubId} userId={user?.id} refreshVersion={reviewVersion} onRefresh={refreshAfterSubmission} />}
                 <section className="ggd-panel">
                     <h2>Статистика</h2>
 
@@ -400,6 +389,8 @@ export default function GroupGoalDetailsPage({ onUserStatsChanged, }) {
                 </section>
             </aside>
         </div>
+
+        {selectedTask && <TaskSubmissionModal key={selectedTask.id} clubId={clubId} goalId={goalId} task={selectedTask} onClose={() => setSelectedTask(null)} onSuccess={refreshAfterSubmission} />}
 
         <ConfirmDialog open={taskToDelete !== null} title="Видалити завдання?" message={taskToDelete
             ? `Видалити завдання «${taskToDelete.title}»? Усі відмітки виконання також будуть втрачені.`

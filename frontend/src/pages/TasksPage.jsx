@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState, } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTasks, createTask, editTask, setTaskStatus, deleteTask, getTaskGoals, } from '../services/tasksService';
-import { getMyGroupGoalTasks, setGroupGoalTaskCompletion, } from '../services/groupGoalsService';
+import { getMyGroupGoalTasks, } from '../services/groupGoalsService';
+import TaskSubmissionModal from '../components/groupGoalsTasks/TaskSubmissionModal';
 import TaskModal from '../components/tasks/TaskModal';
 import TaskFilters from '../components/tasks/TaskFilters';
 import TaskList from '../components/tasks/TaskList';
@@ -17,6 +18,7 @@ export default function TasksPage({ onUserStatsChanged, }) {
   const [tab, setTab] = useState('today');
   const [search, setSearch] = useState('');
   const [goalFilter, setGoalFilter] = useState('all');
+  const [selectedGroupTask, setSelectedGroupTask] = useState(null);
   const [modalTask, setModalTask] = useState(undefined);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [refreshVersion, setRefreshVersion] = useState(0);
@@ -193,24 +195,9 @@ export default function TasksPage({ onUserStatsChanged, }) {
       setBusyId(null);
     }
   };
-  const handleGroupToggle = async (task) => {
-    if (busyId !== null)
-      return;
-    const key = `group-${task.groupGoalId}-${task.id}`;
-    setBusyId(key);
-    setError('');
-    try {
-      await setGroupGoalTaskCompletion(task.clubId, task.groupGoalId, task.id, !task.isCompleted);
-      showToast(task.isCompleted ? 'Групове завдання повернуто до виконання.' : 'Групове завдання виконано.');
-      await reload();
-      await safeRefreshStats();
-    }
-    catch (err) {
-      showToast(err.message || 'Не вдалося оновити групове завдання.', 'error');
-    }
-    finally {
-      setBusyId(null);
-    }
+  const handleGroupToggle = task => {
+    if (!task.isCompleted && !['completed', 'cancelled'].includes(task.groupGoalStatus))
+      setSelectedGroupTask(task);
   };
   const confirmDeleteTask = async () => {
     if (!taskToDelete || deleting)
@@ -290,6 +277,8 @@ export default function TasksPage({ onUserStatsChanged, }) {
         + Додати ще одне завдання
       </button>
     </section>
+
+    {selectedGroupTask && <TaskSubmissionModal key={selectedGroupTask.uniqueId} clubId={selectedGroupTask.clubId} goalId={selectedGroupTask.groupGoalId} task={selectedGroupTask} onClose={() => setSelectedGroupTask(null)} onSuccess={handleOccurrenceChanged} />}
 
     {modalTask !== undefined && (<TaskModal key={modalTask?.id ?? 'new'} task={modalTask} goals={goals} saving={saving} onClose={() => {
       if (!saving)

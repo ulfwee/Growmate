@@ -471,7 +471,7 @@ public class AuthController : ControllerBase
                     await dto.Avatar.CopyToAsync(stream);
                 }
 
-                newAvatarUrl = $"{Request.Scheme}://{Request.Host}" 
+                newAvatarUrl = $"https://{Request.Host}" 
                     + $"/uploads/avatars/{fileName}";
             }
 

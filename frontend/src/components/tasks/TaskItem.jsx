@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import TaskSubmissionStatus from '../groupGoalsTasks/TaskSubmissionStatus';
 import RecurringTodayCheckbox from './RecurringTodayCheckbox';
 import RecurringOccurrences from './RecurringOccurrences';
 import { PRIORITIES, REPEAT_LABELS, formatDate } from './taskUtils';
@@ -14,7 +15,7 @@ export default function TaskItem({ task, goalTitle, busy, refreshVersion, onTogg
       'tasks-recurring-card', isGroup ? 'tasks-group-card' : '', isCompleted ? 'tasks-card-completed' : '',
     ].filter(Boolean).join(' ')}>
       <div className="tasks-list-row">
-        {task.isRecurring && !isGroup ? (
+        {isGroup ? null : task.isRecurring ? (
           <RecurringTodayCheckbox task={task} refreshVersion={refreshVersion} onChanged={onOccurrenceChanged} />
         ) : (
           <label className="tasks-check">
@@ -46,6 +47,7 @@ export default function TaskItem({ task, goalTitle, busy, refreshVersion, onTogg
           </div>
         </div>
 
+        {isGroup && <TaskSubmissionStatus task={task} canSubmit={!busy && !['completed', 'cancelled'].includes(task.groupGoalStatus)} onSubmit={onToggle} />}
         {!isGroup && <span className={`tasks-priority tasks-priority-${task.priority}`}>{PRIORITIES[task.priority] || 'Середній'}</span>}
         {!task.isRecurring && <span className="tasks-row-date">{dueDate}</span>}
 

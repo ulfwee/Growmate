@@ -2,7 +2,6 @@
 using backend.Data;
 using backend.DTOs.GroupGoals;
 using backend.Models;
-using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,14 +14,9 @@ namespace backend.Controllers;
 public class GroupGoalTasksController : ControllerBase
 {
     private readonly AppDBContext _db;
-    private readonly ClubRatingService _rating;
-    private readonly GamificationService _gamification;
-
-    public GroupGoalTasksController(AppDBContext db, ClubRatingService rating, GamificationService gamification)
+    public GroupGoalTasksController(AppDBContext db)
     {
         _db = db;
-        _rating = rating;
-        _gamification = gamification;
     }
 
     #region Methods
@@ -74,8 +68,36 @@ public class GroupGoalTasksController : ControllerBase
             t.SortOrder,
             t.DueDate,
             t.CreatedAt,
+            t.ReviewCriteria,
+            t.RequiresAttachment,
 
-            IsCompleted = joined && _db.GroupGoalTaskCompletions.Any(c => c.GroupGoalTaskId == t.Id && c.UserId == userId)
+            IsCompleted = joined && _db.GroupGoalTaskCompletions.Any(c => c.GroupGoalTaskId == t.Id && c.UserId == userId),
+
+            MySubmission = t.Submissions
+                .Where(s => s.UserId == userId)
+                .OrderByDescending(s => s.SubmittedAt)
+                .ThenByDescending(s => s.Id)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.ReportText,
+                    s.EvidenceUrl,
+                    s.Status,
+                    s.Rating,
+                    s.ReviewComment,
+                    s.SubmittedAt,
+                    s.ReviewedAt,
+                    s.ReviewedBy,
+                    ReviewerUsername = s.Reviewer != null ? s.Reviewer.Username : null,
+                    Attachments = s.Attachments.Select(a => new
+                    {
+                        a.Id,
+                        a.FileUrl,
+                        a.FileName,
+                        a.ContentType,
+                        a.FileSize
+                    }).ToList()
+                }).FirstOrDefault()
         }).ToListAsync();
 
         return Ok(tasks);
@@ -114,7 +136,9 @@ public class GroupGoalTasksController : ControllerBase
             Title = dto.Title.Trim(),
             Description = dto.Description?.Trim(),
             SortOrder = dto.SortOrder,
-            DueDate = dueDate
+            DueDate = dueDate,
+            ReviewCriteria = dto.ReviewCriteria?.Trim(),
+            RequiresAttachment = dto.RequiresAttachment
         };
 
         _db.GroupGoalTasks.Add(task);
@@ -129,7 +153,9 @@ public class GroupGoalTasksController : ControllerBase
             task.Description,
             task.SortOrder,
             task.DueDate,
-            task.CreatedAt
+            task.CreatedAt,
+            task.ReviewCriteria,
+            task.RequiresAttachment
         });
     }
 
@@ -165,10 +191,15 @@ public class GroupGoalTasksController : ControllerBase
         if (dueDate < goal.StartDate || dueDate > goal.EndDate)
             return BadRequest(new { message = "Дата завдання повинна належати періоду групової цілі." });
 
+        if (await _db.GroupGoalTaskSubmissions.AnyAsync(s => s.GroupGoalTaskId == taskId))
+            return Conflict(new { message = "Неможливо редагувати завдання, для якого вже надіслано звіти." });
+
         task.Title = dto.Title.Trim();
         task.Description = dto.Description?.Trim();
         task.SortOrder = dto.SortOrder;
         task.DueDate = dueDate;
+        task.ReviewCriteria = dto.ReviewCriteria?.Trim();
+        task.RequiresAttachment = dto.RequiresAttachment;
 
         await _db.SaveChangesAsync();
 
@@ -179,7 +210,9 @@ public class GroupGoalTasksController : ControllerBase
             task.Title,
             task.Description,
             task.SortOrder,
-            task.DueDate
+            task.DueDate,
+            task.ReviewCriteria,
+            task.RequiresAttachment
         });
     }
 
@@ -204,6 +237,9 @@ public class GroupGoalTasksController : ControllerBase
 
         if (task == null)
             return NotFound();
+        if (await _db.GroupGoalTaskSubmissions.AnyAsync(s => s.GroupGoalTaskId == taskId))
+            return Conflict(new { message = "Неможливо видалити завдання, для якого вже надіслано звіти." });
+
         var completions = await _db.GroupGoalTaskCompletions.Where(c => c.GroupGoalTaskId == taskId).ToListAsync();
 
         await using var transaction = await _db.Database.BeginTransactionAsync();
@@ -219,82 +255,4 @@ public class GroupGoalTasksController : ControllerBase
 
         return NoContent();
     }
-
-    [HttpPatch("{taskId:long}/completion")]
-    public async Task<IActionResult> ToggleCompletion(long clubId, long goalId, long taskId,
-        [FromBody] GroupGoalTaskCompletionDto dto)
-    {
-        if (UserId is not long userId)
-            return Unauthorized();
-
-        if (!await IsMember(clubId, userId))
-            return Forbid();
-
-        var goal = await _db.GroupGoals.FirstOrDefaultAsync(g => g.Id == goalId && g.ClubId == clubId);
-
-        if (goal == null)
-            return NotFound();
-
-        if (!await IsParticipant(goalId, userId))
-            return BadRequest(new { message = "Спочатку долучіться до групової цілі." });
-
-        if (goal.Status is "completed" or "cancelled")
-            return BadRequest(new { message = "Ціль уже закрита." });
-
-        var task = await _db.GroupGoalTasks.FirstOrDefaultAsync(t => t.Id == taskId && t.GroupGoalId == goalId);
-
-        if (task == null)
-            return NotFound();
-
-        var existing = await _db.GroupGoalTaskCompletions.FirstOrDefaultAsync(c => c.GroupGoalTaskId == taskId && c.UserId == userId);
-
-        await using var transaction = await _db.Database.BeginTransactionAsync();
-
-        if (dto.IsCompleted && existing == null)
-        {
-            _db.GroupGoalTaskCompletions.Add(new GroupGoalTaskCompletion
-            {
-                GroupGoalTaskId = taskId,
-                UserId = userId
-            });
-
-            await _db.SaveChangesAsync();
-
-            await _rating.AwardGroupTaskAsync(clubId, userId, taskId);
-
-            await _gamification.AwardXpOnceAsync(userId, 15, $"group_task:{clubId}:{taskId}");
-            await _gamification.RegisterActivityAsync(userId);
-        }
-        else if (!dto.IsCompleted && existing != null)
-        {
-            _db.GroupGoalTaskCompletions.Remove(existing);
-
-            await _db.SaveChangesAsync();
-
-            await _rating.RemoveGroupTaskPointsAsync(clubId, userId, taskId);
-        }
-
-        await transaction.CommitAsync();
-
-        var totalTasks = await _db.GroupGoalTasks.CountAsync(t => t.GroupGoalId == goalId);
-
-        var completedTasks = await (from t in _db.GroupGoalTasks
-                                    join c in _db.GroupGoalTaskCompletions
-                                        on t.Id equals c.GroupGoalTaskId
-                                    where t.GroupGoalId == goalId && c.UserId == userId
-                                    select t.Id).CountAsync();
-
-        decimal myProgress = totalTasks == 0 ? 0 : Math.Round((decimal)completedTasks * 100 / totalTasks, 2);
-
-        return Ok(new
-        {
-            taskId,
-            isCompleted = dto.IsCompleted,
-            completedTasks,
-            totalTasks,
-            myProgress,
-            isPersonallyCompleted = totalTasks > 0 && completedTasks == totalTasks
-        });
-    }
-
 }
